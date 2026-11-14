@@ -1,0 +1,22 @@
+:root{--clinic-blue:#155eef;--clinic-ink:#132238;--clinic-soft:#f3f7fc}body{background:#f7f9fc;color:var(--clinic-ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.clinic-nav{background:#123b67}.navbar-brand{letter-spacing:.2px}.hero-section{background:linear-gradient(135deg,#eaf4ff 0%,#f7fbff 55%,#e8f7f4 100%)}.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.12em;color:#2873bd}.hero-card{background:#fff;border:1px solid #e2edf8;border-radius:1.5rem;padding:3rem 2rem;text-align:center;box-shadow:0 1rem 3rem rgba(20,70,120,.08)}.tooth-icon{font-size:5rem;margin-bottom:1rem}.stat-card{background:#fff;border:1px solid #e8edf4;border-radius:1rem;padding:1.2rem;height:100%;box-shadow:0 .25rem .8rem rgba(20,40,70,.03)}.card{border-radius:1rem;overflow:hidden}.card-header{border-bottom:1px solid #edf1f5}.table thead th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#65758b;background:#f8fafc;white-space:nowrap}.table td{font-size:.92rem}.empty-state{background:#fff;border:1px dashed #d6e0eb;border-radius:1rem;padding:3rem;text-align:center;color:#617287}.medicine-row{padding:.65rem 0;border-bottom:1px solid #edf1f5}.min-vh-75{min-height:65vh}footer{color:#738196}a{text-decoration:none}a:hover{text-decoration:underline}.btn{border-radius:.65rem}.form-control,.form-select{border-radius:.65rem}.form-control:focus,.form-select:focus{box-shadow:0 0 0 .2rem rgba(21,94,239,.12)}
+
+/* Services Page Styles */
+.services-hero-section{background:linear-gradient(135deg,#eaf4ff 0%,#f0fdf9 60%,#e8f4fc 100%);border-bottom:1px solid #e2edf8}
+.service-icon-box{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;font-size:1.4rem;line-height:1}
+.service-card{transition:transform .2s ease,box-shadow .2s ease;border:1px solid #e5edf5}
+.service-card:hover{transform:translateY(-4px);box-shadow:0 .75rem 2rem rgba(20,60,110,.08)!important}
+.category-btn{border-radius:2rem;font-size:.85rem;padding:.35rem .9rem;transition:all .2s ease}
+.category-btn.active{background-color:#155eef;color:#fff;border-color:#155eef}
+.max-w-700{max-width:700px}
+@media print{nav.navbar,footer,#serviceSearchInput,#clearSearchBtn,#priceFilter,#durationFilter,.category-btn,#serviceDetailModal{display:none!important}body{background:#fff;color:#000}#bang-gia-tong-hop{padding:0!important}}
+
+/* Illustration photos */
+.hero-photo{position:relative;border-radius:1.5rem;overflow:hidden;box-shadow:0 1rem 3rem rgba(20,70,120,.12);background:#fff}
+.hero-photo img{width:100%;height:440px;object-fit:cover;object-position:center;display:block}
+.hero-photo-caption{position:absolute;left:1rem;right:1rem;bottom:1rem;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border:1px solid rgba(226,237,248,.9);border-radius:1rem;padding:.85rem 1rem;box-shadow:0 .5rem 1.5rem rgba(20,70,120,.12)}
+.about-photo{width:100%;height:390px;object-fit:cover;object-position:center;border-radius:1.25rem;box-shadow:0 1rem 2.5rem rgba(20,70,120,.10);display:block}
+.services-photo-banner{position:relative;border-radius:1.25rem;overflow:hidden;box-shadow:0 .75rem 2rem rgba(20,70,120,.10);background:#eaf4ff}
+.services-photo-banner img{width:100%;height:320px;object-fit:cover;object-position:center 45%;display:block}
+.services-photo-banner figcaption{position:absolute;left:1.25rem;bottom:1.25rem;max-width:420px;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-radius:1rem;padding:1rem 1.15rem;box-shadow:0 .5rem 1.5rem rgba(20,70,120,.14)}
+@media (max-width:767.98px){.hero-photo img{height:300px}.about-photo{height:260px}.services-photo-banner img{height:220px}.services-photo-banner figcaption{left:.75rem;right:.75rem;bottom:.75rem;max-width:none}}
+@media print{.hero-photo,.about-photo,.services-photo-banner{display:none!important}}

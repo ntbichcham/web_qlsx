@@ -1,0 +1,20 @@
+[2026-11-13 19:37:47] PDOException: SQLSTATE[HY000]: General error: 2006 MySQL server has gone away in D:\xamp\htdocs\ql_phong_kham\app\Models\Service.php:13
+Stack trace:
+#0 D:\xamp\htdocs\ql_phong_kham\app\Models\Service.php(13): PDO->query('SELECT * FROM D...')
+#1 D:\xamp\htdocs\ql_phong_kham\app\Controllers\HomeController.php(12): App\Models\Service->all(true)
+#2 D:\xamp\htdocs\ql_phong_kham\public\index.php(68): App\Controllers\HomeController->index()
+#3 {main}
+[2026-11-13 19:37:55] PDOException: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it in D:\xamp\htdocs\ql_phong_kham\app\Core\Database.php:27
+Stack trace:
+#0 D:\xamp\htdocs\ql_phong_kham\app\Core\Database.php(27): PDO->__construct('mysql:host=127....', 'root', '', Array)
+#1 D:\xamp\htdocs\ql_phong_kham\app\Core\Model.php(12): App\Core\Database::connection()
+#2 D:\xamp\htdocs\ql_phong_kham\app\Controllers\AuthController.php(19): App\Core\Model->__construct()
+#3 D:\xamp\htdocs\ql_phong_kham\public\index.php(68): App\Controllers\AuthController->login()
+#4 {main}
+[2026-11-13 19:38:03] PDOException: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it in D:\xamp\htdocs\ql_phong_kham\app\Core\Database.php:27
+Stack trace:
+#0 D:\xamp\htdocs\ql_phong_kham\app\Core\Database.php(27): PDO->__construct('mysql:host=127....', 'root', '', Array)
+#1 D:\xamp\htdocs\ql_phong_kham\app\Core\Model.php(12): App\Core\Database::connection()
+#2 D:\xamp\htdocs\ql_phong_kham\app\Controllers\AuthController.php(19): App\Core\Model->__construct()
+#3 D:\xamp\htdocs\ql_phong_kham\public\index.php(68): App\Controllers\AuthController->login()
+#4 {main}
