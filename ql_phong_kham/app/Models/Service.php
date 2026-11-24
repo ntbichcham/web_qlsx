@@ -24,4 +24,24 @@ class Service extends Model
         $stmt = $this->db->prepare('UPDATE DICH_VU SET TrangThai=? WHERE MaDV=?');
         $stmt->execute([$status, $id]);
     }
+
+    public function find(int $id): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM DICH_VU WHERE MaDV=?');
+        $stmt->execute([$id]);
+        return $stmt->fetch() ?: null;
+    }
+
+    public function update(int $id, array $data): void
+    {
+        $stmt = $this->db->prepare('UPDATE DICH_VU SET TenDV=?, MoTa=?, ThoiLuong=?, GiaDV=?, TrangThai=? WHERE MaDV=?');
+        $stmt->execute([
+            $data['TenDV'],
+            $data['MoTa'] ?: null,
+            (int)$data['ThoiLuong'],
+            (float)$data['GiaDV'],
+            $data['TrangThai'],
+            $id,
+        ]);
+    }
 }

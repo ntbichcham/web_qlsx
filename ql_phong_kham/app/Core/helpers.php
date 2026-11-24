@@ -58,6 +58,9 @@ function status_badge(string $status): string
         'DA_HOAN_THANH' => 'success', 'DA_HUY' => 'secondary',
         'DANG_DIEU_TRI' => 'info', 'HOAT_DONG' => 'success', 'KHOA' => 'danger',
         'NGUNG_HOAT_DONG' => 'secondary', 'DANG_AP_DUNG' => 'success', 'NGUNG_AP_DUNG' => 'secondary',
+        'DANG_THEO_DOI' => 'info', 'DA_DONG' => 'secondary',
+        'TAM_DUNG' => 'warning', 'DA_KET_THUC' => 'success', 'DANG_KHAM' => 'primary',
+        'DA_TIEP_NHAN' => 'info',
     ];
     $labels = [
         'CHO_XAC_NHAN' => 'Chờ xác nhận', 'DA_XAC_NHAN' => 'Đã xác nhận',
@@ -65,6 +68,9 @@ function status_badge(string $status): string
         'DANG_DIEU_TRI' => 'Đang điều trị', 'HOAT_DONG' => 'Hoạt động', 'KHOA' => 'Đã khóa',
         'NGUNG_HOAT_DONG' => 'Ngừng hoạt động', 'DANG_AP_DUNG' => 'Đang áp dụng',
         'NGUNG_AP_DUNG' => 'Ngừng áp dụng',
+        'DANG_THEO_DOI' => 'Đang theo dõi', 'DA_DONG' => 'Đã đóng',
+        'TAM_DUNG' => 'Tạm dừng', 'DA_KET_THUC' => 'Đã kết thúc', 'DANG_KHAM' => 'Đang khám',
+        'DA_TIEP_NHAN' => 'Đã tiếp nhận',
     ];
     $label = $labels[$status] ?? str_replace('_', ' ', $status);
     return '<span class="badge text-bg-' . ($map[$status] ?? 'secondary') . '">' . e($label) . '</span>';

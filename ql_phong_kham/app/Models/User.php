@@ -53,4 +53,52 @@ class User extends Model
         $stmt = $this->db->prepare('UPDATE TAI_KHOAN_NGUOI_DUNG SET TrangThai = ? WHERE MaND = ?');
         $stmt->execute([$status, $id]);
     }
+
+    public function find(int $id): ?array
+    {
+        $sql = "SELECT u.MaND, u.TenDN, u.VaiTro, u.TrangThai, u.NgayTao,
+                       d.MaBS, d.HoTen AS TenBS, d.SDT AS SDTBS, d.Email AS EmailBS,
+                       d.ChuyenMon, d.GioiThieu,
+                       s.MaNV, s.HoTen AS TenNV, s.SDT AS SDTNV, s.Email AS EmailNV, s.ChucVu,
+                       p.MaBN, p.HoTen AS TenBN
+                FROM TAI_KHOAN_NGUOI_DUNG u
+                LEFT JOIN BAC_SI d ON d.MaND = u.MaND
+                LEFT JOIN NHAN_VIEN s ON s.MaND = u.MaND
+                LEFT JOIN BENH_NHAN p ON p.MaND = u.MaND
+                WHERE u.MaND = ? LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch() ?: null;
+    }
+
+    public function updatePassword(int $id, string $password): void
+    {
+        $stmt = $this->db->prepare('UPDATE TAI_KHOAN_NGUOI_DUNG SET MatKhau = ? WHERE MaND = ?');
+        $stmt->execute([password_hash($password, PASSWORD_DEFAULT), $id]);
+    }
+
+    public function updateDoctorProfile(int $doctorId, array $data): void
+    {
+        $stmt = $this->db->prepare('UPDATE BAC_SI SET HoTen=?, SDT=?, Email=?, ChuyenMon=?, GioiThieu=? WHERE MaBS=?');
+        $stmt->execute([
+            $data['HoTen'],
+            $data['SDT'] ?: null,
+            $data['Email'] ?: null,
+            $data['ChuyenMon'] ?: null,
+            $data['GioiThieu'] ?: null,
+            $doctorId,
+        ]);
+    }
+
+    public function updateStaffProfile(int $staffId, array $data): void
+    {
+        $stmt = $this->db->prepare('UPDATE NHAN_VIEN SET HoTen=?, SDT=?, Email=?, ChucVu=? WHERE MaNV=?');
+        $stmt->execute([
+            $data['HoTen'],
+            $data['SDT'] ?: null,
+            $data['Email'] ?: null,
+            $data['ChucVu'] ?: null,
+            $staffId,
+        ]);
+    }
 }

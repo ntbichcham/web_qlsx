@@ -134,6 +134,91 @@ class DoctorController extends Controller
         $this->view('doctor/treatments', ['pageTitle' => 'Đợt điều trị', 'treatments' => (new Clinical())->treatmentsForDoctor((int)$doctor['MaBS'])]);
     }
 
+    public function treatment(): void
+    {
+        $this->requireRole(['BAC_SI']);
+        $doctor = $this->doctorProfile();
+        $clinical = new Clinical();
+        $id = (int)($_GET['id'] ?? $_POST['MaDT'] ?? 0);
+        $treatment = $clinical->treatmentForDoctor($id, (int)$doctor['MaBS']);
+        if (!$treatment) {
+            http_response_code(404);
+            render_error(404, 'Không tìm thấy đợt điều trị.');
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->postOnly();
+            try {
+                $clinical->updateTreatment($id, (int)$doctor['MaBS'], [
+                    'ChuanDoan' => trim((string)($_POST['ChuanDoan'] ?? '')),
+                    'KeHoachDieuTri' => trim((string)($_POST['KeHoachDieuTri'] ?? '')),
+                    'NgayKetThuc' => trim((string)($_POST['NgayKetThuc'] ?? '')),
+                    'TrangThai' => (string)($_POST['TrangThai'] ?? ''),
+                    'KetQuaTongKet' => trim((string)($_POST['KetQuaTongKet'] ?? '')),
+                ]);
+                flash('success', 'Đã cập nhật đợt điều trị #' . $id . '.');
+                redirect_to('doctor.treatment', ['id' => $id]);
+            } catch (Throwable $e) {
+                flash('danger', $e->getMessage());
+                redirect_to('doctor.treatment', ['id' => $id]);
+            }
+        }
+
+        $this->view('doctor/treatment', [
+            'pageTitle' => 'Đợt điều trị',
+            'treatment' => $treatment,
+            'visits' => $clinical->visitsForTreatment($id, (int)$doctor['MaBS']),
+        ]);
+    }
+
+    public function records(): void
+    {
+        $this->requireRole(['BAC_SI']);
+        $doctor = $this->doctorProfile();
+        $this->view('doctor/records', [
+            'pageTitle' => 'Hồ sơ bệnh án',
+            'patients' => (new Clinical())->patientsForDoctor((int)$doctor['MaBS']),
+        ]);
+    }
+
+    public function record(): void
+    {
+        $this->requireRole(['BAC_SI']);
+        $doctor = $this->doctorProfile();
+        $clinical = new Clinical();
+        $patientId = (int)($_GET['id'] ?? $_POST['MaBN'] ?? 0);
+        $record = $clinical->recordForDoctor($patientId, (int)$doctor['MaBS']);
+        if (!$record) {
+            http_response_code(404);
+            render_error(404, 'Không tìm thấy hồ sơ bệnh án trong phạm vi được phân công.');
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->postOnly();
+            try {
+                $clinical->updateMedicalRecord((int)$record['MaHSBA'], (int)$doctor['MaBS'], [
+                    'TienSuBenh' => trim((string)($_POST['TienSuBenh'] ?? '')),
+                    'DiUng' => trim((string)($_POST['DiUng'] ?? '')),
+                    'GhiChu' => trim((string)($_POST['GhiChu'] ?? '')),
+                    'TrangThai' => (string)($_POST['TrangThai'] ?? ''),
+                ]);
+                flash('success', 'Đã cập nhật hồ sơ bệnh án của ' . $record['HoTen'] . '.');
+                redirect_to('doctor.record', ['id' => $patientId]);
+            } catch (Throwable $e) {
+                flash('danger', $e->getMessage());
+                redirect_to('doctor.record', ['id' => $patientId]);
+            }
+        }
+
+        $this->view('doctor/record', [
+            'pageTitle' => 'Hồ sơ bệnh án',
+            'record' => $record,
+            'treatments' => $clinical->treatmentsForPatient($patientId, (int)$doctor['MaBS']),
+        ]);
+    }
+
     public function schedules(): void
     {
         $this->requireRole(['BAC_SI']);

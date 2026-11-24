@@ -76,7 +76,7 @@ Nếu bạn đổi tên thư mục dự án, ứng dụng tự xác định URL 
 ## 3. Khởi tạo dữ liệu để thử nghiệm
 
 1. Đăng nhập bằng tài khoản quản trị vừa tạo.
-2. Vào **Tài khoản** để tạo tài khoản bác sĩ, nhân viên hoặc quản trị viên. Tài khoản bác sĩ/nhân viên được tạo kèm hồ sơ tương ứng; tài khoản quản trị viên chỉ cần tên đăng nhập và mật khẩu.
+2. Vào **Tài khoản** để tạo tài khoản bác sĩ, nhân viên hoặc quản trị viên. Tài khoản bác sĩ/nhân viên được tạo kèm hồ sơ tương ứng; tài khoản quản trị viên chỉ cần tên đăng nhập và mật khẩu. Mục **Sửa** cho phép cập nhật hồ sơ, chuyên môn/chức vụ và đặt lại mật khẩu.
 3. Vào **Dịch vụ** để thêm dịch vụ (hoặc import dữ liệu mẫu).
 4. Vào **Lịch làm việc** để tạo ca cho bác sĩ hoặc để bác sĩ tự đăng ký ca trong mục **Lịch làm việc** của mình.
 5. Mở cửa sổ ẩn danh/ trình duyệt khác, đăng ký tài khoản bệnh nhân.
@@ -105,6 +105,7 @@ Nếu bạn đổi tên thư mục dự án, ứng dụng tự xác định URL 
 - Dashboard tiếp nhận.
 - Tạo hồ sơ bệnh nhân chưa có tài khoản (`MaND = NULL`).
 - Tìm kiếm danh sách bệnh nhân.
+- Cập nhật thông tin hành chính của hồ sơ bệnh nhân.
 - Đặt lịch thay bệnh nhân; hệ thống ghi nhận `MaNVTao`.
 - Xem và cập nhật trạng thái lịch hẹn.
 
@@ -113,16 +114,19 @@ Nếu bạn đổi tên thư mục dự án, ứng dụng tự xác định URL 
 - Tự đăng ký ca làm việc cho chính mình; ca có hiệu lực ngay và có thể ngừng ca chưa diễn ra, chưa có lịch hẹn.
 - Xem lịch sử ca làm việc và số lịch hẹn trong từng ca.
 - Tiếp nhận lịch hẹn để tạo hồ sơ bệnh án/đợt điều trị/lần khám nếu chưa có lần khám.
+- Xem danh sách hồ sơ bệnh án trong phạm vi phụ trách; cập nhật tiền sử bệnh, dị ứng, ghi chú và trạng thái hồ sơ.
 - Cập nhật thông tin lần khám.
 - Ghi nhận dịch vụ thực hiện.
 - Tạo đơn thuốc và thêm nhiều chi tiết thuốc.
 - Xem danh sách đợt điều trị do mình phụ trách.
+- Xem chi tiết đợt điều trị, danh sách lần khám và cập nhật chẩn đoán, kế hoạch, ngày kết thúc, trạng thái, kết quả tổng kết.
 
 ### Quản trị viên
 - Dashboard tổng quan và số liệu cơ bản.
 - Tạo tài khoản bác sĩ/nhân viên kèm hồ sơ và tài khoản quản trị viên.
+- Cập nhật hồ sơ bác sĩ/nhân viên, chuyên môn, chức vụ và đặt lại mật khẩu tài khoản.
 - Khóa/mở tài khoản.
-- Thêm/ngừng áp dụng dịch vụ.
+- Thêm, cập nhật và ngừng áp dụng dịch vụ.
 - Tạo lịch làm việc cho bác sĩ và bật/tắt các ca do bác sĩ tự đăng ký.
 - Theo dõi lịch hẹn toàn phòng khám (không có màn hình truy cập bệnh án/đơn thuốc).
 
@@ -149,7 +153,7 @@ ql_phong_kham/
 ## 6. Những việc cần hoàn thiện tiếp
 
 - Hoàn thiện liên kết tài khoản mới với hồ sơ bệnh nhân có sẵn sau bước xác minh danh tính; bản khởi đầu chưa tự động ghép hồ sơ trùng.
-- Bổ sung CRUD đầy đủ (sửa/xóa mềm/chi tiết) cho bác sĩ, nhân viên, bệnh nhân và lịch làm việc.
+- Bổ sung xóa mềm/khôi phục tài khoản, bệnh nhân, dịch vụ và chỉnh sửa chi tiết ca làm việc; hiện đã có cập nhật hồ sơ bệnh nhân, hồ sơ bác sĩ/nhân viên, dịch vụ và đặt lại mật khẩu.
 - Hoàn thiện bộ lọc ngày/trạng thái, báo cáo nâng cao và giao diện responsive theo Figma.
 - Hoàn thiện quy trình tạo đợt điều trị độc lập và khám không có lịch hẹn nếu nhóm cần hỗ trợ đầy đủ.
 - Xác minh bác sĩ kê đơn trùng với bác sĩ được gán cho lần khám theo quy tắc nghiệp vụ của phòng khám.

@@ -96,6 +96,69 @@ class AdminController extends Controller
         redirect_to('admin.accounts');
     }
 
+    public function editAccount(): void
+    {
+        $this->requireRole(['QUAN_TRI_VIEN']);
+        $id = (int)($_GET['id'] ?? $_POST['MaND'] ?? 0);
+        $userModel = new User();
+        $account = $userModel->find($id);
+        if (!$account) {
+            http_response_code(404);
+            render_error(404, 'Không tìm thấy tài khoản.');
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->postOnly();
+            $password = (string)($_POST['MatKhau'] ?? '');
+            $name = trim((string)($_POST['HoTen'] ?? ''));
+            $phone = trim((string)($_POST['SDT'] ?? ''));
+            $email = trim((string)($_POST['Email'] ?? ''));
+
+            if ($password !== '' && strlen($password) < 8) {
+                flash('danger', 'Mật khẩu mới tối thiểu 8 ký tự.');
+                redirect_to('admin.account.edit', ['id' => $id]);
+            }
+            if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                flash('danger', 'Email không hợp lệ.');
+                redirect_to('admin.account.edit', ['id' => $id]);
+            }
+
+            try {
+                if ($account['VaiTro'] === 'BAC_SI') {
+                    if (!$account['MaBS']) throw new \RuntimeException('Tài khoản bác sĩ chưa có hồ sơ BAC_SI. Vui lòng kiểm tra dữ liệu.');
+                    if ($name === '') throw new \RuntimeException('Họ tên bác sĩ không được để trống.');
+                    $userModel->updateDoctorProfile((int)$account['MaBS'], [
+                        'HoTen' => $name,
+                        'SDT' => $phone,
+                        'Email' => $email,
+                        'ChuyenMon' => trim((string)($_POST['ChuyenMon'] ?? '')),
+                        'GioiThieu' => trim((string)($_POST['GioiThieu'] ?? '')),
+                    ]);
+                } elseif ($account['VaiTro'] === 'NHAN_VIEN') {
+                    if (!$account['MaNV']) throw new \RuntimeException('Tài khoản nhân viên chưa có hồ sơ NHAN_VIEN. Vui lòng kiểm tra dữ liệu.');
+                    if ($name === '') throw new \RuntimeException('Họ tên nhân viên không được để trống.');
+                    $userModel->updateStaffProfile((int)$account['MaNV'], [
+                        'HoTen' => $name,
+                        'SDT' => $phone,
+                        'Email' => $email,
+                        'ChucVu' => trim((string)($_POST['ChucVu'] ?? '')),
+                    ]);
+                }
+                if ($password !== '') {
+                    $userModel->updatePassword($id, $password);
+                }
+                flash('success', 'Đã cập nhật tài khoản' . ($password !== '' ? ' và đặt lại mật khẩu.' : '.'));
+                redirect_to('admin.accounts');
+            } catch (Throwable $e) {
+                flash('danger', $e->getMessage());
+                redirect_to('admin.account.edit', ['id' => $id]);
+            }
+        }
+
+        $this->view('admin/account_edit', ['pageTitle' => 'Cập nhật tài khoản', 'account' => $account]);
+    }
+
     public function services(): void
     {
         $this->requireRole(['QUAN_TRI_VIEN']);
@@ -125,6 +188,59 @@ class AdminController extends Controller
         (new Service())->updateStatus((int)($_POST['MaDV'] ?? 0), $status);
         flash('success', 'Đã cập nhật dịch vụ.');
         redirect_to('admin.services');
+    }
+
+    public function editService(): void
+    {
+        $this->requireRole(['QUAN_TRI_VIEN']);
+        $model = new Service();
+        $id = (int)($_GET['id'] ?? $_POST['MaDV'] ?? 0);
+        $service = $model->find($id);
+        if (!$service) {
+            http_response_code(404);
+            render_error(404, 'Không tìm thấy dịch vụ.');
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->postOnly();
+            $name = trim((string)($_POST['TenDV'] ?? ''));
+            $duration = (int)($_POST['ThoiLuong'] ?? 0);
+            $price = (float)($_POST['GiaDV'] ?? -1);
+            $status = (string)($_POST['TrangThai'] ?? '');
+            if ($name === '') {
+                flash('danger', 'Tên dịch vụ không được để trống.');
+                redirect_to('admin.service.edit', ['id' => $id]);
+            }
+            if ($duration < 1) {
+                flash('danger', 'Thời lượng phải lớn hơn 0 phút.');
+                redirect_to('admin.service.edit', ['id' => $id]);
+            }
+            if ($price < 0) {
+                flash('danger', 'Giá dịch vụ không hợp lệ.');
+                redirect_to('admin.service.edit', ['id' => $id]);
+            }
+            if (!in_array($status, ['DANG_AP_DUNG', 'NGUNG_AP_DUNG'], true)) {
+                flash('danger', 'Trạng thái dịch vụ không hợp lệ.');
+                redirect_to('admin.service.edit', ['id' => $id]);
+            }
+            try {
+                $model->update($id, [
+                    'TenDV' => $name,
+                    'MoTa' => trim((string)($_POST['MoTa'] ?? '')),
+                    'ThoiLuong' => $duration,
+                    'GiaDV' => $price,
+                    'TrangThai' => $status,
+                ]);
+                flash('success', 'Đã cập nhật dịch vụ #' . $id . '.');
+                redirect_to('admin.services');
+            } catch (Throwable $e) {
+                flash('danger', 'Không thể cập nhật dịch vụ. Vui lòng kiểm tra dữ liệu.');
+                redirect_to('admin.service.edit', ['id' => $id]);
+            }
+        }
+
+        $this->view('admin/service_edit', ['pageTitle' => 'Cập nhật dịch vụ', 'service' => $service]);
     }
 
     public function schedules(): void

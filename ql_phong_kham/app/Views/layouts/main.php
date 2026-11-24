@@ -11,7 +11,8 @@ $menus = [
         ['staff.dashboard', 'Tổng quan'], ['staff.patients', 'Tiếp nhận bệnh nhân'], ['staff.book', 'Đặt lịch tại quầy'], ['staff.appointments', 'Quản lý lịch hẹn'],
     ],
     'BAC_SI' => [
-        ['doctor.dashboard', 'Tổng quan'], ['doctor.schedules', 'Lịch làm việc'], ['doctor.visits', 'Lịch khám'], ['doctor.treatments', 'Đợt điều trị'],
+        ['doctor.dashboard', 'Tổng quan'], ['doctor.schedules', 'Lịch làm việc'], ['doctor.visits', 'Lịch khám'],
+        ['doctor.records', 'Hồ sơ bệnh án'], ['doctor.treatments', 'Đợt điều trị'],
     ],
     'QUAN_TRI_VIEN' => [
         ['admin.dashboard', 'Tổng quan'], ['admin.accounts', 'Tài khoản'], ['admin.services', 'Dịch vụ'], ['admin.schedules', 'Lịch làm việc'], ['admin.appointments', 'Lịch hẹn'],

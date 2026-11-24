@@ -122,4 +122,117 @@ class Clinical extends Model
         $stmt->execute([$prescriptionId]);
         return $stmt->fetchAll();
     }
+
+    public function treatmentForDoctor(int $treatmentId, int $doctorId): ?array
+    {
+        $stmt = $this->db->prepare("SELECT d.*, h.MaHSBA, h.MaBN, h.TienSuBenh, h.DiUng,
+                h.GhiChu AS GhiChuHoSo, h.TrangThai AS TrangThaiHoSo,
+                p.HoTen AS TenBenhNhan, p.SDT, p.GioiTinh, p.NgaySinh
+            FROM DOT_DIEU_TRI d
+            JOIN HO_SO_BENH_AN h ON h.MaHSBA = d.MaHSBA
+            JOIN BENH_NHAN p ON p.MaBN = h.MaBN
+            WHERE d.MaDT = ? AND d.MaBS = ? LIMIT 1");
+        $stmt->execute([$treatmentId, $doctorId]);
+        return $stmt->fetch() ?: null;
+    }
+
+    public function visitsForTreatment(int $treatmentId, int $doctorId): array
+    {
+        $stmt = $this->db->prepare("SELECT v.*, d.MaDT
+            FROM LAN_KHAM v JOIN DOT_DIEU_TRI d ON d.MaDT = v.MaDT
+            WHERE v.MaDT = ? AND d.MaBS = ? AND v.MaBS = ?
+            ORDER BY v.NgayGioKham DESC, v.MaLKham DESC");
+        $stmt->execute([$treatmentId, $doctorId, $doctorId]);
+        return $stmt->fetchAll();
+    }
+
+    public function updateTreatment(int $treatmentId, int $doctorId, array $data): void
+    {
+        $treatment = $this->treatmentForDoctor($treatmentId, $doctorId);
+        if (!$treatment) throw new RuntimeException('Không tìm thấy đợt điều trị trong phạm vi được phân công.');
+
+        $allowed = ['DANG_DIEU_TRI', 'TAM_DUNG', 'DA_KET_THUC'];
+        if (!in_array($data['TrangThai'], $allowed, true)) {
+            throw new RuntimeException('Trạng thái đợt điều trị không hợp lệ.');
+        }
+        $endDate = $data['NgayKetThuc'] ?: null;
+        if ($endDate !== null && $endDate < $treatment['NgayBatDau']) {
+            throw new RuntimeException('Ngày kết thúc không được trước ngày bắt đầu.');
+        }
+        if ($data['TrangThai'] === 'DA_KET_THUC' && $endDate === null) {
+            $endDate = date('Y-m-d');
+        }
+        if ($data['TrangThai'] === 'DANG_DIEU_TRI' && $endDate !== null) {
+            $endDate = null;
+        }
+        if ($data['TrangThai'] === 'DA_KET_THUC' && trim((string)$data['KetQuaTongKet']) === '') {
+            throw new RuntimeException('Vui lòng nhập kết quả tổng kết khi kết thúc đợt điều trị.');
+        }
+
+        $stmt = $this->db->prepare('UPDATE DOT_DIEU_TRI SET ChuanDoan=?, KeHoachDieuTri=?, NgayKetThuc=?, TrangThai=?, KetQuaTongKet=? WHERE MaDT=?');
+        $stmt->execute([
+            $data['ChuanDoan'] ?: null,
+            $data['KeHoachDieuTri'] ?: null,
+            $endDate,
+            $data['TrangThai'],
+            $data['KetQuaTongKet'] ?: null,
+            $treatmentId,
+        ]);
+    }
+
+    public function patientsForDoctor(int $doctorId): array
+    {
+        $stmt = $this->db->prepare("SELECT p.MaBN, p.HoTen, p.SDT, p.GioiTinh, p.NgaySinh,
+                h.MaHSBA, h.TrangThai AS TrangThaiHoSo, COUNT(DISTINCT d.MaDT) AS SoDotDieuTri
+            FROM DOT_DIEU_TRI d
+            JOIN HO_SO_BENH_AN h ON h.MaHSBA = d.MaHSBA
+            JOIN BENH_NHAN p ON p.MaBN = h.MaBN
+            WHERE d.MaBS = ?
+            GROUP BY p.MaBN, p.HoTen, p.SDT, p.GioiTinh, p.NgaySinh, h.MaHSBA, h.TrangThai
+            ORDER BY p.HoTen");
+        $stmt->execute([$doctorId]);
+        return $stmt->fetchAll();
+    }
+
+    public function recordForDoctor(int $patientId, int $doctorId): ?array
+    {
+        $stmt = $this->db->prepare("SELECT h.*, p.HoTen, p.SDT, p.Email, p.DiaChi, p.GioiTinh, p.NgaySinh
+            FROM HO_SO_BENH_AN h JOIN BENH_NHAN p ON p.MaBN = h.MaBN
+            WHERE h.MaBN = ? AND EXISTS (
+                SELECT 1 FROM DOT_DIEU_TRI d WHERE d.MaHSBA = h.MaHSBA AND d.MaBS = ?
+            ) LIMIT 1");
+        $stmt->execute([$patientId, $doctorId]);
+        return $stmt->fetch() ?: null;
+    }
+
+    public function updateMedicalRecord(int $recordId, int $doctorId, array $data): void
+    {
+        $allowed = ['DANG_THEO_DOI', 'DA_DONG'];
+        if (!in_array($data['TrangThai'], $allowed, true)) {
+            throw new RuntimeException('Trạng thái hồ sơ bệnh án không hợp lệ.');
+        }
+        $check = $this->db->prepare('SELECT 1 FROM HO_SO_BENH_AN h JOIN DOT_DIEU_TRI d ON d.MaHSBA = h.MaHSBA WHERE h.MaHSBA = ? AND d.MaBS = ? LIMIT 1');
+        $check->execute([$recordId, $doctorId]);
+        if (!$check->fetchColumn()) throw new RuntimeException('Không có quyền cập nhật hồ sơ bệnh án này.');
+
+        $stmt = $this->db->prepare('UPDATE HO_SO_BENH_AN SET TienSuBenh=?, DiUng=?, GhiChu=?, TrangThai=? WHERE MaHSBA=?');
+        $stmt->execute([
+            $data['TienSuBenh'] ?: null,
+            $data['DiUng'] ?: null,
+            $data['GhiChu'] ?: null,
+            $data['TrangThai'],
+            $recordId,
+        ]);
+    }
+
+    public function treatmentsForPatient(int $patientId, int $doctorId): array
+    {
+        $stmt = $this->db->prepare("SELECT d.*, (SELECT COUNT(*) FROM LAN_KHAM v WHERE v.MaDT = d.MaDT) AS SoLanKham
+            FROM DOT_DIEU_TRI d
+            JOIN HO_SO_BENH_AN h ON h.MaHSBA = d.MaHSBA
+            WHERE h.MaBN = ? AND d.MaBS = ?
+            ORDER BY d.NgayBatDau DESC, d.MaDT DESC");
+        $stmt->execute([$patientId, $doctorId]);
+        return $stmt->fetchAll();
+    }
 }

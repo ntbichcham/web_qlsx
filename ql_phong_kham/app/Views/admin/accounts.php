@@ -112,19 +112,22 @@ $currentUser = current_user();
                                 <td><?= status_badge($a['TrangThai']) ?></td>
                                 <td class="small text-secondary"><?= e(date('d/m/Y H:i', strtotime((string)$a['NgayTao']))) ?></td>
                                 <td>
-                                    <?php if ($isCurrent): ?>
-                                        <span class="text-secondary small">Đang đăng nhập</span>
-                                    <?php else: ?>
-                                        <form method="post" action="<?= e(url('admin.account.status')) ?>" class="d-flex gap-1">
-                                            <?= csrf_field() ?>
-                                            <input type="hidden" name="MaND" value="<?= (int)$a['MaND'] ?>">
-                                            <select class="form-select form-select-sm" name="TrangThai" aria-label="Trạng thái tài khoản">
-                                                <option value="HOAT_DONG" <?= $a['TrangThai'] === 'HOAT_DONG' ? 'selected' : '' ?>>Hoạt động</option>
-                                                <option value="KHOA" <?= $a['TrangThai'] === 'KHOA' ? 'selected' : '' ?>>Khóa</option>
-                                            </select>
-                                            <button class="btn btn-sm btn-outline-primary">Lưu</button>
-                                        </form>
-                                    <?php endif; ?>
+                                    <div class="d-flex flex-wrap align-items-center gap-1">
+                                        <a class="btn btn-sm btn-outline-primary" href="<?= e(url('admin.account.edit', ['id' => (int)$a['MaND']])) ?>">Sửa</a>
+                                        <?php if ($isCurrent): ?>
+                                            <span class="text-secondary small">Đang đăng nhập</span>
+                                        <?php else: ?>
+                                            <form method="post" action="<?= e(url('admin.account.status')) ?>" class="d-flex gap-1">
+                                                <?= csrf_field() ?>
+                                                <input type="hidden" name="MaND" value="<?= (int)$a['MaND'] ?>">
+                                                <select class="form-select form-select-sm" name="TrangThai" aria-label="Trạng thái tài khoản">
+                                                    <option value="HOAT_DONG" <?= $a['TrangThai'] === 'HOAT_DONG' ? 'selected' : '' ?>>Hoạt động</option>
+                                                    <option value="KHOA" <?= $a['TrangThai'] === 'KHOA' ? 'selected' : '' ?>>Khóa</option>
+                                                </select>
+                                                <button class="btn btn-sm btn-outline-primary">Lưu</button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

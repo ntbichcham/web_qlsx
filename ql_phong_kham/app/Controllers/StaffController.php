@@ -34,6 +34,49 @@ class StaffController extends Controller
         $this->view('staff/appointments', ['pageTitle' => 'Quản lý lịch hẹn', 'appointments' => (new Appointment())->all()]);
     }
 
+    public function editPatient(): void
+    {
+        $this->requireRole(['NHAN_VIEN']);
+        $model = new Patient();
+        $id = (int)($_GET['id'] ?? $_POST['MaBN'] ?? 0);
+        $patient = $model->find($id);
+        if (!$patient) {
+            http_response_code(404);
+            render_error(404, 'Không tìm thấy hồ sơ bệnh nhân.');
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->postOnly();
+            $data = $this->patientData();
+            if ($data['HoTen'] === '') {
+                flash('danger', 'Họ tên bệnh nhân không được để trống.');
+                redirect_to('staff.patient.edit', ['id' => $id]);
+            }
+            if ($data['Email'] !== '' && !filter_var($data['Email'], FILTER_VALIDATE_EMAIL)) {
+                flash('danger', 'Email không hợp lệ.');
+                redirect_to('staff.patient.edit', ['id' => $id]);
+            }
+            if ($data['SDT'] !== '' && !preg_match('/^[0-9+().\-\s]{6,20}$/', $data['SDT'])) {
+                flash('danger', 'Số điện thoại không hợp lệ.');
+                redirect_to('staff.patient.edit', ['id' => $id]);
+            }
+            try {
+                $model->update($id, $data);
+                flash('success', 'Đã cập nhật hồ sơ bệnh nhân #' . $id . '.');
+                redirect_to('staff.patients');
+            } catch (Throwable $e) {
+                flash('danger', 'Không thể cập nhật hồ sơ. Vui lòng kiểm tra dữ liệu.');
+                redirect_to('staff.patient.edit', ['id' => $id]);
+            }
+        }
+
+        $this->view('staff/patient_edit', [
+            'pageTitle' => 'Cập nhật hồ sơ bệnh nhân',
+            'patient' => $patient,
+        ]);
+    }
+
     public function book(): void
     {
         $this->requireRole(['NHAN_VIEN']);
